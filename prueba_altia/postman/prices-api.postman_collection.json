@@ -4,11 +4,88 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [{ "key": "baseUrl", "value": "http://localhost:8080" }],
-  "item": [{
-    "name": "Get applicable price",
-    "request": {
-      "method": "GET",
-      "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T16:00:00&productId=35455&brandId=1"
+  "item": [
+    {
+      "name": "Get applicable price",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T16:00:00&productId=35455&brandId=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Returns 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Returns price list 2', () => pm.expect(pm.response.json().priceList).to.eql(2));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Returns 404 when no price applies",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T10:00:00&productId=99999&brandId=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Returns 404 Not Found', () => pm.response.to.have.status(404));",
+            "pm.test('Returns an API error body', () => pm.expect(pm.response.json().status).to.eql(404));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Returns 400 for invalid parameters",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T10:00:00&productId=0&brandId=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Returns 400 Bad Request', () => pm.response.to.have.status(400));",
+            "pm.test('Returns an API error body', () => pm.expect(pm.response.json().status).to.eql(400));"
+          ]
+        }
+      }]
+    },
+    {
+      "name": "Cache - first identical request",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T16:00:00&productId=35455&brandId=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": ["pm.test('Returns 200 OK', () => pm.response.to.have.status(200));"]
+        }
+      }]
+    },
+    {
+      "name": "Cache - second identical request",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T16:00:00&productId=35455&brandId=1"
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "pm.test('Returns 200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('Returns the cached price data', () => pm.expect(pm.response.json().priceList).to.eql(2));"
+          ]
+        }
+      }]
     }
-  }]
+  ]
 }
