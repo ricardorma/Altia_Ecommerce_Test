@@ -1,4 +1,4 @@
-# Altia Prices API
+# ECOMMERCE Prices API
 
 Spring Boot service that returns the applicable selling price for a product, brand and application date.
 
