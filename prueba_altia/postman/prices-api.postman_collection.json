@@ -1,0 +1,14 @@
+{
+  "info": {
+    "name": "Altia Prices API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:8080" }],
+  "item": [{
+    "name": "Get applicable price",
+    "request": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/v1/prices?applicationDate=2020-06-14T16:00:00&productId=35455&brandId=1"
+    }
+  }]
+}
